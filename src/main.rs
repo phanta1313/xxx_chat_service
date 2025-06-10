@@ -31,7 +31,7 @@ async fn main() {
 async fn handle_connection(stream: TcpStream, addr: SocketAddr, peers: PeerMap) {
     let ws_stream = match accept_async(stream).await {
         Ok(ws) => ws,
-        Err(e) => {
+        Err(_) => {
             return;
         }
     };
@@ -44,11 +44,11 @@ async fn handle_connection(stream: TcpStream, addr: SocketAddr, peers: PeerMap) 
         match msg {
             Ok(msg) => {
                 if msg.is_text() || msg.is_binary() {
-                    if let Err(e) = broadcast(&peers, msg, addr).await {
+                    if let Err(_) = broadcast(&peers, msg, addr).await {
                     }
                 }
             }
-            Err(e) => {
+            Err(_) => {
                 break;
             }
         }
@@ -64,7 +64,7 @@ async fn broadcast(peers: &PeerMap, msg: Message, sender_addr: SocketAddr) -> Re
 
     for (peer, addr) in peers.iter_mut() {
         if *addr != sender_addr {
-            if let Err(e) = peer.send(msg.clone()).await {
+            if let Err(_) = peer.send(msg.clone()).await {
                 failed_connections.push(*addr);
             }
         }
